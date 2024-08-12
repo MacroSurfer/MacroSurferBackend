@@ -146,8 +146,7 @@ Context: {}
     return generate_llm_response(final_prompt)
 
 def handle_get_history(user_intent_extract):
-    # TODO: get history
-    # 在这个情况中我们需要根据用户的提问，返回相关的历史数据，用户的提问会给一个event的名字，我们使用event_name来call Get history for event来拿到过去一年的历史数据，给用户信息
+    # 在这个情况中我们需要根据用户的提问，返回相关的历史数据，用户的提问会给一个event的名字，我们使用event_name来call Get history for event来拿到过去90天的历史数据，给用户信息
     # 用户问题例子 What is the historical value of "10-Year NTN-F Auction"?
     # 用户问题例子 What is the historical value of "CPI"?
     url = "https://gethistoryforevent-rozzd6eg5q-uc.a.run.app/getHistoryForEvent"
@@ -181,16 +180,32 @@ def handle_get_history(user_intent_extract):
     return generate_llm_response(final_prompt)
 
 def handle_get_event_details(user_intent_extract):
-    # TODO: get event details
     # 在这个情况中我们需要根据用户的提问，来返回一些economic事件的定义，我们不用API，我们直接让LLM生成
     # 示例问题：What is the definition of 10-Year NTN-F Auction
     # 示例问题：What is the definition of CPI
-    pass
+    prompt = """You are an informative financial analyst trying to answer the definition of a economic event or financial products.
+        The context to support your response is provided below in json format.
+        You should clearly list out all the details along with their contexts for the user.
+        If the response is not valid, respond: 'Sorry, I do not have relevant information'.
+        Please answer using professional and concise tone.
+
+        Context: {}
+
+        """
+
+    final_prompt = prompt.format(json.dumps(user_intent_extract))
+    return generate_llm_response(final_prompt)
 
 def handle_default_intent(user_question):
-    # TODO:respond to default intent
-    # 这个情况我们直接让AI回答用户其余问题，用户问什么答什么就好了
-    pass
+    prompt = """You are an informative financial analyst trying to answer the user's question.
+            The context to support your response is provided below in json format.
+            Please answer using professional and concise tone.
+
+            Context: {}
+
+            """
+    final_prompt = prompt.format(json.dumps(user_question))
+    return generate_llm_response(final_prompt)
 
 def generate_llm_response(prompt):
     global client
@@ -209,13 +224,18 @@ if __name__ == '__main__':
     # if user_intent_extract["intent"] == "get_economic_calendar":
     #     user_response = handle_get_economic_calendar(user_intent_extract)
     #     print(https_fn.Response(user_response))
-    # user_question = "What is the historical value of CPI"
+    user_question = "What is 10-Year NTN-F Auction?"
+    user_intent_extract = extract_user_intent(user_question)
+    if user_intent_extract["intent"] == "get_event_details":
+        user_response = handle_get_event_details(user_intent_extract)
+        print(https_fn.Response(user_response))
+    # user_question = "What is the historical value of 10-Year Note Auction"
     # user_intent_extract = extract_user_intent(user_question)
     # if user_intent_extract["intent"] == "get_history":
     #     user_response = handle_get_history(user_intent_extract)
     #     print(https_fn.Response(user_response))
-    user_question = "What is the historical value of 10-Year Note Auction"
-    user_intent_extract = extract_user_intent(user_question)
-    if user_intent_extract["intent"] == "get_history":
-        user_response = handle_get_history(user_intent_extract)
-        print(https_fn.Response(user_response))
+    # user_question = "what's the correct way to calculate the return? Give me an example"
+    # user_intent_extract = extract_user_intent(user_question)
+    # if user_intent_extract["intent"] not in ["get_economic_calendar", "get_history", "get_event_details"]:
+    #     user_response = handle_default_intent(user_question)
+    #     print(https_fn.Response(user_response))
