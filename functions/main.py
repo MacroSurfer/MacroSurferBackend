@@ -224,7 +224,7 @@ if __name__ == '__main__':
     # if user_intent_extract["intent"] == "get_economic_calendar":
     #     user_response = handle_get_economic_calendar(user_intent_extract)
     #     print(https_fn.Response(user_response))
-    user_question = "What is the historical value of 10-Year NTN-F Auction?"
+    user_question = "What is 10-Year NTN-F Auction?"
     user_intent_extract = extract_user_intent(user_question)
     if user_intent_extract["intent"] == "get_event_details":
         user_response = handle_get_event_details(user_intent_extract)
