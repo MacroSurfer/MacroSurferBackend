@@ -150,12 +150,16 @@ def handle_get_history(user_intent_extract):
     # 在这个情况中我们需要根据用户的提问，返回相关的历史数据，用户的提问会给一个event的名字，我们使用event_name来call Get history for event来拿到过去一年的历史数据，给用户信息
     # 用户问题例子 What is the historical value of "10-Year NTN-F Auction"?
     # 用户问题例子 What is the historical value of "CPI"?
-    url = "https://geteventdetails-rozzd6eg5q-uc.a.run.app/getEventDetails"
+    url = "https://gethistoryforevent-rozzd6eg5q-uc.a.run.app/getHistoryForEvent"
     event_name = user_intent_extract.get("event_name")
     country_code = user_intent_extract.get("country_code", 'US')
+    start_date = (date.today() - timedelta(days=90)).strftime("%Y-%m-%d")
+    end_date = date.today().strftime("%Y-%m-%d")
     params = {
         'country': country_code,
-        'event': event_name
+        'event': event_name,
+        'startDate': start_date,
+        'endDate': end_date,
     }
     print(params)
     response = requests.get(url, params=params)
